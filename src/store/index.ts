@@ -4,12 +4,14 @@ import patient from '../patients/patient-slice'
 import patients from '../patients/patients-slice'
 import title from '../page-header/title-slice'
 import user from '../user/user-slice'
+import connection from '../config/connection-slice'
 
 const reducer = combineReducers({
   patient,
   patients,
   title,
   user,
+  connection,
 })
 
 const store = configureStore({

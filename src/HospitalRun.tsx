@@ -16,8 +16,15 @@ import PrivateRoute from './components/PrivateRoute'
 const HospitalRun = () => {
   const { title } = useSelector((state: RootState) => state.title)
   const { permissions } = useSelector((state: RootState) => state.user)
+  const { online } = useSelector((state: RootState) => state.connection)
+
   return (
     <div>
+      {!online && (
+        <div style={{ textAlign: 'center', background: 'orange' }}>
+          Offline: Data will be saved locally until next DB sync
+        </div>
+      )}
       <Navbar />
       <div className="container-fluid">
         <Sidebar />
