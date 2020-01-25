@@ -48,7 +48,15 @@ export default class Repository<T extends AbstractDBModel> {
 
   async save(entity: T): Promise<T> {
     const { id, rev, ...valuesToSave } = entity
-    const savedEntity = await this.db.put({ _id: getTime(new Date()).toString(), ...valuesToSave })
+    const entityToSave = { _id: getTime(new Date()).toString(), ...valuesToSave }
+    const savedEntity = await this.db.put(entityToSave)
+    return this.find(savedEntity.id)
+  }
+
+  async update(entity: T): Promise<T> {
+    const { id, rev, ...valuesToSave } = entity
+    const entityToSave = { _id: id, _rev: rev, ...valuesToSave }
+    const savedEntity = await this.db.put(entityToSave)
     return this.find(savedEntity.id)
   }
 

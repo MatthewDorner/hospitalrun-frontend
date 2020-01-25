@@ -7,7 +7,8 @@ import Sidebar from './components/Sidebar'
 import Permissions from './model/Permissions'
 import Dashboard from './dashboard/Dashboard'
 import Patients from './patients/list/Patients'
-import NewPatient from './patients/new/NewPatient'
+import NewPatient from './patients/new-edit/NewPatient'
+import EditPatient from './patients/new-edit/EditPatient'
 import ViewPatient from './patients/view/ViewPatient'
 import { RootState } from './store'
 import Navbar from './components/Navbar'
@@ -42,6 +43,16 @@ const HospitalRun = () => {
                   component={NewPatient}
                 />
                 <PrivateRoute
+                  exact
+                  isAuthenticated={
+                    permissions.includes(Permissions.ReadPatients) &&
+                    permissions.includes(Permissions.WritePatients)
+                  }
+                  path="/patients/edit/:id"
+                  component={EditPatient}
+                />
+                <PrivateRoute
+                  exact
                   isAuthenticated={permissions.includes(Permissions.ReadPatients)}
                   path="/patients/:id"
                   component={ViewPatient}

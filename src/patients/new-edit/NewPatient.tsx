@@ -2,7 +2,7 @@ import React from 'react'
 import { useHistory } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import NewPatientForm from './NewPatientForm'
+import NewEditPatientForm from './NewEditPatientForm'
 import useTitle from '../../page-header/useTitle'
 import Patient from '../../model/Patient'
 import { createPatient } from '../patients-slice'
@@ -14,14 +14,14 @@ const NewPatient = () => {
   useTitle(t('patients.newPatient'))
 
   const onCancel = () => {
-    history.push('/patients')
+    history.goBack()
   }
 
   const onSave = (patient: Patient) => {
     dispatch(createPatient(patient, history))
   }
 
-  return <NewPatientForm onCancel={onCancel} onSave={onSave} />
+  return <NewEditPatientForm isNew onCancel={onCancel} onSave={onSave} />
 }
 
 export default NewPatient

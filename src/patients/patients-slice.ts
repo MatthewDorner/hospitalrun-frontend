@@ -25,11 +25,15 @@ const patientsSlice = createSlice({
   reducers: {
     getPatientsStart: startLoading,
     createPatientStart: startLoading,
+    updatePatientStart: startLoading, // this isn't really 'loading'
     getAllPatientsSuccess(state, { payload }: PayloadAction<Patient[]>) {
       state.isLoading = false
       state.patients = payload
     },
     createPatientSuccess(state) {
+      state.isLoading = false
+    },
+    updatePatientSuccess(state) {
       state.isLoading = false
     },
   },
@@ -39,17 +43,33 @@ export const {
   getAllPatientsSuccess,
   createPatientStart,
   createPatientSuccess,
+  updatePatientStart,
+  updatePatientSuccess,
 } = patientsSlice.actions
 
 export const createPatient = (patient: Patient, history: any): AppThunk => async (dispatch) => {
   dispatch(createPatientStart())
-  const newPatient = await PatientRepository.save(patient)
+  const newPatient = await PatientRepository.save(patient, true)
   dispatch(createPatientSuccess())
   history.push(`/patients/${newPatient.id}`)
   Toast(
     'success',
     il8n.t('Success!'),
     `${il8n.t('patients.successfullyCreated')} ${patient.givenName} ${patient.familyName} ${
+      patient.suffix
+    }`,
+  )
+}
+
+export const updatePatient = (patient: Patient, history: any): AppThunk => async (dispatch) => {
+  dispatch(updatePatientStart())
+  const updatedPatient = await PatientRepository.save(patient)
+  dispatch(updatePatientSuccess())
+  history.push(`/patients/${updatedPatient.id}`)
+  Toast(
+    'success',
+    il8n.t('Success!'),
+    `${il8n.t('patients.successfullyUpdated')} ${patient.givenName} ${patient.familyName} ${
       patient.suffix
     }`,
   )

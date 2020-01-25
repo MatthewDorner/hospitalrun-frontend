@@ -49,10 +49,13 @@ export class PatientRepository extends Repository<Patient> {
     return formatFriendlyId('P', generateSequenceNumber(parseInt(currentSequenceNumber, 10)))
   }
 
-  async save(entity: Patient): Promise<Patient> {
-    const friendlyId = await this.getFriendlyId()
-    entity.friendlyId = friendlyId
-    return super.save(entity)
+  async save(entity: Patient, isNew?: boolean): Promise<Patient> {
+    if (isNew) {
+      const friendlyId = await this.getFriendlyId()
+      entity.friendlyId = friendlyId
+      return super.save(entity)
+    }
+    return super.update(entity)
   }
 }
 

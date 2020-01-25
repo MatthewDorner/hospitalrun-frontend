@@ -10,31 +10,36 @@ import Patient from '../../model/Patient'
 import { getPatientName } from '../util/patient-name-util'
 
 interface Props {
+  patientForEdit?: Patient
   onCancel: () => void
   onSave: (patient: Patient) => void
+  isNew: boolean
 }
 
-const NewPatientForm = (props: Props) => {
+const NewEditPatientForm = (props: Props) => {
   const { t } = useTranslation()
   const [isEditable] = useState(true)
-  const { onCancel, onSave } = props
+  const { onCancel, onSave, patientForEdit, isNew } = props
   const [approximateAge, setApproximateAge] = useState(0)
-  const [patient, setPatient] = useState({
-    givenName: '',
-    familyName: '',
-    suffix: '',
-    prefix: '',
-    dateOfBirth: '',
-    isApproximateDateOfBirth: false,
-    sex: '',
-    phoneNumber: '',
-    email: '',
-    address: '',
-    preferredLanguage: '',
-    occupation: '',
-    type: '',
-    fullName: '',
-  })
+  // is this a good place for setting model defaults? shouldn't that be moved to the model?
+  const [patient, setPatient] = useState(
+    patientForEdit || {
+      givenName: '',
+      familyName: '',
+      suffix: '',
+      prefix: '',
+      dateOfBirth: '',
+      isApproximateDateOfBirth: false,
+      sex: '',
+      phoneNumber: '',
+      email: '',
+      address: '',
+      preferredLanguage: '',
+      occupation: '',
+      type: '',
+      fullName: '',
+    },
+  )
 
   const onSaveButtonClick = async () => {
     const newPatient = {
@@ -55,6 +60,10 @@ const NewPatientForm = (props: Props) => {
     } as Patient
 
     onSave(newPatient)
+  }
+
+  const onUpdateButtonClick = () => {
+    onSave(patient as Patient)
   }
 
   const onFieldChange = (key: string, value: string) => {
@@ -180,7 +189,11 @@ const NewPatientForm = (props: Props) => {
               name="dateOfBirth"
               label={t('patient.dateOfBirth')}
               isEditable={isEditable && !patient.isApproximateDateOfBirth}
-              value={patient.dateOfBirth.length > 0 ? new Date(patient.dateOfBirth) : undefined}
+              value={
+                patient.dateOfBirth && patient.dateOfBirth.length > 0
+                  ? new Date(patient.dateOfBirth)
+                  : undefined
+              }
               onChange={(date: Date) => {
                 onDateOfBirthChange(date)
               }}
@@ -275,9 +288,16 @@ const NewPatientForm = (props: Props) => {
           </div>
         </div>
 
-        {isEditable && (
+        {isNew ? (
           <div className="row">
             <Button onClick={onSaveButtonClick}> {t('actions.save')}</Button>
+            <Button color="danger" onClick={() => onCancel()}>
+              {t('actions.cancel')}
+            </Button>
+          </div>
+        ) : (
+          <div className="row">
+            <Button onClick={onUpdateButtonClick}> {t('actions.update')}</Button>
             <Button color="danger" onClick={() => onCancel()}>
               {t('actions.cancel')}
             </Button>
@@ -288,4 +308,4 @@ const NewPatientForm = (props: Props) => {
   )
 }
 
-export default NewPatientForm
+export default NewEditPatientForm

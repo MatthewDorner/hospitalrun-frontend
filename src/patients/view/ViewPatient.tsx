@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, withRouter, Route, useHistory, useLocation } from 'react-router-dom'
-import { Panel, Spinner, TabsHeader, Tab } from '@hospitalrun/components'
+import { Panel, Spinner, TabsHeader, Tab, Button } from '@hospitalrun/components'
 import { useTranslation } from 'react-i18next'
 import useTitle from '../../page-header/useTitle'
 import { fetchPatient } from '../patient-slice'
@@ -52,6 +52,11 @@ const ViewPatient = () => {
           <GeneralInformation patient={patient} />
         </Route>
       </Panel>
+      <div className="row">
+        <Button onClick={() => history.push(`/patients/edit/${patient.id}`)}>
+          {t('actions.edit')}
+        </Button>
+      </div>
     </div>
   )
 }
