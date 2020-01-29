@@ -1,5 +1,8 @@
 import React from 'react'
-import { Panel } from '@hospitalrun/components'
+import { Panel, Button } from '@hospitalrun/components'
+// why are we sometimes importing from 'react-router' and someitmes
+// from 'react-router-dom'
+import { useHistory } from 'react-router'
 import { differenceInYears } from 'date-fns'
 import Patient from 'model/Patient'
 import { useTranslation } from 'react-i18next'
@@ -32,6 +35,8 @@ const getPatientDateOfBirth = (dateOfBirth: string | undefined): Date | undefine
 const GeneralInformation = (props: Props) => {
   const { t } = useTranslation()
   const { patient } = props
+  const history = useHistory()
+
   return (
     <div>
       <Panel title={t('patient.basicInformation')} color="primary" collapsible>
@@ -138,6 +143,11 @@ const GeneralInformation = (props: Props) => {
           </div>
         </div>
       </Panel>
+      <div className="row">
+        <Button onClick={() => history.push(`/patients/edit/${patient.id}`)}>
+          {t('actions.edit')}
+        </Button>
+      </div>
     </div>
   )
 }

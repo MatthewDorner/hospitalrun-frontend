@@ -12,49 +12,21 @@ import { getPatientName } from '../util/patient-name-util'
 interface Props {
   onCancel: () => void
   onSave: (patient: Patient) => void
+  initialPatient: Patient
 }
 
-const NewPatientForm = (props: Props) => {
+const NewEditPatientForm = (props: Props) => {
   const { t } = useTranslation()
   const [isEditable] = useState(true)
-  const { onCancel, onSave } = props
+  const { initialPatient, onCancel, onSave } = props
   const [approximateAge, setApproximateAge] = useState(0)
-  const [patient, setPatient] = useState({
-    givenName: '',
-    familyName: '',
-    suffix: '',
-    prefix: '',
-    dateOfBirth: '',
-    isApproximateDateOfBirth: false,
-    sex: '',
-    phoneNumber: '',
-    email: '',
-    address: '',
-    preferredLanguage: '',
-    occupation: '',
-    type: '',
-    fullName: '',
-  })
+  const [patient, setPatient] = useState(initialPatient)
 
-  const onSaveButtonClick = async () => {
-    const newPatient = {
-      prefix: patient.prefix,
-      familyName: patient.familyName,
-      givenName: patient.givenName,
-      suffix: patient.suffix,
-      sex: patient.sex,
-      dateOfBirth: patient.dateOfBirth,
-      isApproximateDateOfBirth: patient.isApproximateDateOfBirth,
-      type: patient.type,
-      occupation: patient.occupation,
-      preferredLanguage: patient.preferredLanguage,
-      phoneNumber: patient.phoneNumber,
-      email: patient.email,
-      address: patient.address,
+  const onSaveButtonClick = () => {
+    onSave({
+      ...patient,
       fullName: getPatientName(patient.givenName, patient.familyName, patient.suffix),
-    } as Patient
-
-    onSave(newPatient)
+    })
   }
 
   const onFieldChange = (key: string, value: string) => {
@@ -179,7 +151,11 @@ const NewPatientForm = (props: Props) => {
               name="dateOfBirth"
               label={t('patient.dateOfBirth')}
               isEditable={isEditable && !patient.isApproximateDateOfBirth}
-              value={patient.dateOfBirth.length > 0 ? new Date(patient.dateOfBirth) : undefined}
+              value={
+                patient.dateOfBirth && patient.dateOfBirth.length > 0
+                  ? new Date(patient.dateOfBirth)
+                  : undefined
+              }
               onChange={(date: Date) => {
                 onDateOfBirthChange(date)
               }}
@@ -287,4 +263,4 @@ const NewPatientForm = (props: Props) => {
   )
 }
 
-export default NewPatientForm
+export default NewEditPatientForm

@@ -11,6 +11,7 @@ import Patient from '../../model/Patient'
 import GeneralInformation from './GeneralInformation'
 import RelatedPerson from '../related-persons/RelatedPersonTab'
 
+// this move to utility or whatever?
 const getFriendlyId = (p: Patient): string => {
   if (p) {
     return p.friendlyId
@@ -25,7 +26,9 @@ const ViewPatient = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const { patient } = useSelector((state: RootState) => state.patient)
-  useTitle(`${getPatientFullName(patient)} (${getFriendlyId(patient)})`)
+  useTitle(
+    `${t('patients.viewPatient')}: ${getPatientFullName(patient)} (${getFriendlyId(patient)})`,
+  )
 
   const { id } = useParams()
   useEffect(() => {
