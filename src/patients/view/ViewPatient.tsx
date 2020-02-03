@@ -30,10 +30,11 @@ const ViewPatient = () => {
   const { id } = useParams()
   useEffect(() => {
     if (id) {
-      dispatch(fetchPatient(id))
+      dispatch(fetchPatient(id, () => null))
     }
   }, [dispatch, id])
 
+  // this check doesn't work as an empty object isn't falsy
   if (!patient) {
     return <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
   }

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'store'
 import Permissions from 'model/Permissions'
 import PatientRepository from 'clients/db/PatientRepository'
+import { useHistory } from 'react-router'
 
 interface Props {
   patient: Patient
@@ -16,6 +17,7 @@ interface Props {
 
 const RelatedPersonTab = (props: Props) => {
   const dispatch = useDispatch()
+  const history = useHistory()
   const { patient } = props
   const { t } = useTranslation()
   const { permissions } = useSelector((state: RootState) => state.user)
@@ -58,7 +60,7 @@ const RelatedPersonTab = (props: Props) => {
     }
 
     patientToUpdate.relatedPersons.push(relatedPerson)
-    dispatch(updatePatient(patientToUpdate))
+    dispatch(updatePatient(patientToUpdate, history))
     closeNewRelatedPersonModal()
   }
 

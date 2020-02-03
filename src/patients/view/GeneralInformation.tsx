@@ -1,8 +1,11 @@
 import React from 'react'
-import { Panel } from '@hospitalrun/components'
-import { differenceInYears } from 'date-fns'
+import { Panel, Button, Checkbox } from '@hospitalrun/components'
+
+import { useHistory } from 'react-router'
 import Patient from 'model/Patient'
 import { useTranslation } from 'react-i18next'
+import { startOfDay, subYears, differenceInYears } from 'date-fns'
+
 import TextFieldWithLabelFormGroup from '../../components/input/TextFieldWithLabelFormGroup'
 import TextInputWithLabelFormGroup from '../../components/input/TextInputWithLabelFormGroup'
 import SelectWithLabelFormGroup from '../../components/input/SelectWithLableFormGroup'
@@ -10,44 +13,109 @@ import DatePickerWithLabelFormGroup from '../../components/input/DatePickerWithL
 
 interface Props {
   patient: Patient
-}
-
-const getPatientAge = (dateOfBirth: string | undefined): string => {
-  if (!dateOfBirth) {
-    return ''
-  }
-
-  const dob = new Date(dateOfBirth)
-  return differenceInYears(new Date(), dob).toString()
-}
-
-const getPatientDateOfBirth = (dateOfBirth: string | undefined): Date | undefined => {
-  if (!dateOfBirth) {
-    return undefined
-  }
-
-  return new Date(dateOfBirth)
+  isEditable?: boolean
+  onCancel?: () => void
+  onSave?: () => void
+  onFieldChange?: (key: string, value: string | boolean) => void
 }
 
 const GeneralInformation = (props: Props) => {
   const { t } = useTranslation()
-  const { patient } = props
+  const { patient, isEditable, onCancel, onSave, onFieldChange } = props
+
+  const history = useHistory()
+
+  const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, fieldName: string) =>
+    onFieldChange && onFieldChange(fieldName, event.target.value)
+
+  const onDateOfBirthChange = (date: Date) =>
+    onFieldChange && onFieldChange('dateOfBirth', date.toISOString())
+
+  const onInputElementChange = (event: React.ChangeEvent<HTMLInputElement>, fieldName: string) =>
+    onFieldChange && onFieldChange(fieldName, event.target.value)
+
+  const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, fieldName: string) =>
+    onFieldChange && onFieldChange(fieldName, event.target.checked)
+
+  const onApproximateAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let approximateAgeNumber
+    if (Number.isNaN(parseFloat(event.target.value))) {
+      approximateAgeNumber = 0
+    } else {
+      approximateAgeNumber = parseFloat(event.target.value)
+    }
+
+    const approximateDateOfBirth = subYears(new Date(), approximateAgeNumber)
+    if (onFieldChange) {
+      onFieldChange('dateOfBirth', startOfDay(approximateDateOfBirth).toISOString())
+    }
+  }
+
   return (
     <div>
       <Panel title={t('patient.basicInformation')} color="primary" collapsible>
+        <div className="row">
+          <div className="col-md-2">
+            <TextInputWithLabelFormGroup
+              label={t('patient.prefix')}
+              name="prefix"
+              value={patient.prefix}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'prefix')
+              }}
+            />
+          </div>
+          <div className="col-md-4">
+            <TextInputWithLabelFormGroup
+              label={t('patient.givenName')}
+              name="givenName"
+              value={patient.givenName}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'givenName')
+              }}
+            />
+          </div>
+          <div className="col-md-4">
+            <TextInputWithLabelFormGroup
+              label={t('patient.familyName')}
+              name="familyName"
+              value={patient.familyName}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'familyName')
+              }}
+            />
+          </div>
+          <div className="col-md-2">
+            <TextInputWithLabelFormGroup
+              label={t('patient.suffix')}
+              name="suffix"
+              value={patient.suffix}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'suffix')
+              }}
+            />
+          </div>
+        </div>
         <div className="row">
           <div className="col">
             <SelectWithLabelFormGroup
               name="sex"
               label={t('patient.sex')}
               value={patient.sex}
-              isEditable={false}
+              isEditable={isEditable}
               options={[
                 { label: t('sex.male'), value: 'male' },
                 { label: t('sex.female'), value: 'female' },
                 { label: t('sex.other'), value: 'other' },
                 { label: t('sex.unknown'), value: 'unknown' },
               ]}
+              onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                onSelectChange(event, 'sex')
+              }}
             />
           </div>
           <div className="col">
@@ -55,36 +123,56 @@ const GeneralInformation = (props: Props) => {
               name="type"
               label={t('patient.type')}
               value={patient.type}
-              isEditable={false}
+              isEditable={isEditable}
               options={[
                 { label: t('patient.types.charity'), value: 'charity' },
                 { label: t('patient.types.private'), value: 'private' },
               ]}
+              onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
+                onSelectChange(event, 'type')
+              }}
             />
           </div>
         </div>
         <div className="row">
-          <div className="col-md-6">
-            <TextInputWithLabelFormGroup
-              label={
-                patient.isApproximateDateOfBirth ? t('patient.approximateAge') : t('patient.age')
-              }
-              name="age"
-              value={getPatientAge(patient.dateOfBirth)}
-              isEditable={false}
-            />
+          <div className="col-md-4">
+            {patient.isApproximateDateOfBirth ? (
+              <TextInputWithLabelFormGroup
+                label={t('patient.approximateAge')}
+                name="approximateAge"
+                type="number"
+                value={`${differenceInYears(new Date(), new Date(patient.dateOfBirth))}`}
+                isEditable={isEditable}
+                onChange={onApproximateAgeChange}
+              />
+            ) : (
+              <DatePickerWithLabelFormGroup
+                name="dateOfBirth"
+                label={t('patient.dateOfBirth')}
+                isEditable={isEditable && !patient.isApproximateDateOfBirth}
+                value={
+                  patient.dateOfBirth && patient.dateOfBirth.length > 0
+                    ? new Date(patient.dateOfBirth)
+                    : undefined
+                }
+                onChange={(date: Date) => {
+                  onDateOfBirthChange(date)
+                }}
+              />
+            )}
           </div>
-          <div className="col-md-6">
-            <DatePickerWithLabelFormGroup
-              label={
-                patient.isApproximateDateOfBirth
-                  ? t('patient.approximateDateOfBirth')
-                  : t('patient.dateOfBirth')
-              }
-              name="dateOfBirth"
-              value={getPatientDateOfBirth(patient.dateOfBirth)}
-              isEditable={false}
-            />
+          <div className="col-md-2">
+            <div className="form-group">
+              <Checkbox
+                label={t('patient.unknownDateOfBirth')}
+                name="unknown"
+                disabled={!isEditable}
+                onChange={
+                  (event) => onCheckboxChange(event, 'isApproximateDateOfBirth')
+                  // eslint-disable-next-line react/jsx-curly-newline
+                }
+              />
+            </div>
           </div>
         </div>
         <div className="row">
@@ -93,7 +181,10 @@ const GeneralInformation = (props: Props) => {
               label={t('patient.occupation')}
               name="occupation"
               value={patient.occupation}
-              isEditable={false}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'occupation')
+              }}
             />
           </div>
           <div className="col-md-6">
@@ -101,7 +192,10 @@ const GeneralInformation = (props: Props) => {
               label={t('patient.preferredLanguage')}
               name="preferredLanguage"
               value={patient.preferredLanguage}
-              isEditable={false}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'preferredLanguage')
+              }}
             />
           </div>
         </div>
@@ -114,7 +208,10 @@ const GeneralInformation = (props: Props) => {
               label={t('patient.phoneNumber')}
               name="phoneNumber"
               value={patient.phoneNumber}
-              isEditable={false}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'contactInformation')
+              }}
             />
           </div>
           <div className="col">
@@ -123,7 +220,10 @@ const GeneralInformation = (props: Props) => {
               placeholder="email@email.com"
               name="email"
               value={patient.email}
-              isEditable={false}
+              isEditable={isEditable}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onInputElementChange(event, 'email')
+              }}
             />
           </div>
         </div>
@@ -133,11 +233,30 @@ const GeneralInformation = (props: Props) => {
               label={t('patient.address')}
               name="address"
               value={patient.address}
-              isEditable={false}
+              isEditable={isEditable}
+              onChange={
+                (event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  onFieldChange && onFieldChange('address', event.currentTarget.value)
+                // eslint-disable-next-line react/jsx-curly-newline
+              }
             />
           </div>
         </div>
       </Panel>
+      {isEditable ? (
+        <div className="row">
+          <Button onClick={() => onSave && onSave()}> {t('actions.save')}</Button>
+          <Button color="danger" onClick={onCancel && (() => onCancel())}>
+            {t('actions.cancel')}
+          </Button>
+        </div>
+      ) : (
+        <div className="row">
+          <Button onClick={() => history.push(`/patients/edit/${patient.id}`)}>
+            {t('actions.edit')}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
