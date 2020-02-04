@@ -206,7 +206,7 @@ const GeneralInformation = (props: Props) => {
               value={patient.phoneNumber}
               isEditable={isEditable}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                onInputElementChange(event, 'contactInformation')
+                onInputElementChange(event, 'phoneNumber')
               }}
             />
           </div>
