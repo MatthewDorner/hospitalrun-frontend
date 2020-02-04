@@ -41,7 +41,6 @@ const EditPatient = () => {
   useEffect(() => {
     if (id) {
       dispatch(fetchPatient(id))
-      setPatient(reduxPatient)
     }
   }, [id, dispatch])
 
