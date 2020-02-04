@@ -53,13 +53,12 @@ export const {
   updatePatientSuccess,
 } = patientSlice.actions
 
-export const fetchPatient = (id: string, setState: (patient: Patient) => void): AppThunk => async (
-  dispatch,
-) => {
+export const fetchPatient = (id: string): AppThunk => async (dispatch) => {
+  console.log('in fetchPatient gonna dispatch getPatientStart')
   dispatch(getPatientStart())
   const patient = await PatientRepository.find(id)
+  console.log('in fetchPatient gonna dispatch getPatientSuccess')
   dispatch(getPatientSuccess(patient))
-  setState(patient)
 }
 
 export const createPatient = (patient: Patient, history: any): AppThunk => async (dispatch) => {

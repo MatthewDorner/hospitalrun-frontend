@@ -2,14 +2,14 @@ import React from 'react'
 import { Panel, Button, Checkbox } from '@hospitalrun/components'
 
 import { useHistory } from 'react-router'
-import Patient from 'model/Patient'
 import { useTranslation } from 'react-i18next'
 import { startOfDay, subYears, differenceInYears } from 'date-fns'
 
-import TextFieldWithLabelFormGroup from '../../components/input/TextFieldWithLabelFormGroup'
-import TextInputWithLabelFormGroup from '../../components/input/TextInputWithLabelFormGroup'
-import SelectWithLabelFormGroup from '../../components/input/SelectWithLableFormGroup'
-import DatePickerWithLabelFormGroup from '../../components/input/DatePickerWithLabelFormGroup'
+import Patient from '../model/Patient'
+import TextFieldWithLabelFormGroup from '../components/input/TextFieldWithLabelFormGroup'
+import TextInputWithLabelFormGroup from '../components/input/TextInputWithLabelFormGroup'
+import SelectWithLabelFormGroup from '../components/input/SelectWithLableFormGroup'
+import DatePickerWithLabelFormGroup from '../components/input/DatePickerWithLabelFormGroup'
 
 interface Props {
   patient: Patient
@@ -22,7 +22,6 @@ interface Props {
 const GeneralInformation = (props: Props) => {
   const { t } = useTranslation()
   const { patient, isEditable, onCancel, onSave, onFieldChange } = props
-
   const history = useHistory()
 
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>, fieldName: string) =>
@@ -167,10 +166,7 @@ const GeneralInformation = (props: Props) => {
                 label={t('patient.unknownDateOfBirth')}
                 name="unknown"
                 disabled={!isEditable}
-                onChange={
-                  (event) => onCheckboxChange(event, 'isApproximateDateOfBirth')
-                  // eslint-disable-next-line react/jsx-curly-newline
-                }
+                onChange={(event) => onCheckboxChange(event, 'isApproximateDateOfBirth')}
               />
             </div>
           </div>
@@ -234,11 +230,8 @@ const GeneralInformation = (props: Props) => {
               name="address"
               value={patient.address}
               isEditable={isEditable}
-              onChange={
-                (event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  onFieldChange && onFieldChange('address', event.currentTarget.value)
-                // eslint-disable-next-line react/jsx-curly-newline
-              }
+              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                onFieldChange && onFieldChange('address', event.currentTarget.value)}
             />
           </div>
         </div>

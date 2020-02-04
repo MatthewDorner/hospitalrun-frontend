@@ -3,7 +3,8 @@ import { useHistory, useParams } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { Spinner } from '@hospitalrun/components'
-import GeneralInformation from '../view/GeneralInformation'
+
+import GeneralInformation from '../GeneralInformation'
 import useTitle from '../../page-header/useTitle'
 import Patient from '../../model/Patient'
 import { updatePatient, fetchPatient } from '../patient-slice'
@@ -32,18 +33,19 @@ const EditPatient = () => {
     )})`,
   )
 
+  useEffect(() => {
+    setPatient(reduxPatient)
+  }, [reduxPatient])
+
   const { id } = useParams()
   useEffect(() => {
     if (id) {
-      dispatch(fetchPatient(id, (fetchedPatient) => setPatient(fetchedPatient)))
+      dispatch(fetchPatient(id))
+      setPatient(reduxPatient)
     }
   }, [id, dispatch])
 
-  // see comment in ViewPatient
-  if (!reduxPatient) {
-    return <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
-  }
-
+  // onCancel, onSave and onFieldChange are still duplicated between this and NewPatient
   const onCancel = () => {
     history.goBack()
   }
@@ -65,6 +67,11 @@ const EditPatient = () => {
       ...patient,
       [key]: value,
     })
+  }
+
+  // see comment in ViewPatient
+  if (!reduxPatient) {
+    return <Spinner color="blue" loading size={[10, 25]} type="ScaleLoader" />
   }
 
   return (

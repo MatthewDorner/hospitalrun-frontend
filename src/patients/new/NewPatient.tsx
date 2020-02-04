@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import GeneralInformation from '../view/GeneralInformation'
+
+import GeneralInformation from '../GeneralInformation'
 import useTitle from '../../page-header/useTitle'
 import Patient from '../../model/Patient'
 import { createPatient } from '../patient-slice'
@@ -12,9 +13,10 @@ const NewPatient = () => {
   const { t } = useTranslation()
   const history = useHistory()
   const dispatch = useDispatch()
-  useTitle(t('patients.newPatient'))
 
   const [patient, setPatient] = useState({} as Patient)
+
+  useTitle(t('patients.newPatient'))
 
   const onCancel = () => {
     history.goBack()
