@@ -54,10 +54,8 @@ export const {
 } = patientSlice.actions
 
 export const fetchPatient = (id: string): AppThunk => async (dispatch) => {
-  console.log('in fetchPatient gonna dispatch getPatientStart')
   dispatch(getPatientStart())
   const patient = await PatientRepository.find(id)
-  console.log('in fetchPatient gonna dispatch getPatientSuccess')
   dispatch(getPatientSuccess(patient))
 }
 
